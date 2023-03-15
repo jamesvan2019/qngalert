@@ -33,11 +33,11 @@ func (n *Node) ErrorMsg(str string, err error) {
 }
 
 func (n *Node) ErrorMsgFormat(str string, err error) string {
-	return fmt.Sprintf("[node]%s[msg]%s[err]%s", n.Cfg.Rpc, str, err.Error())
+	return fmt.Sprintf("[node]%s [msg]%s [err]%s", n.Cfg.Rpc, str, err.Error())
 }
 
 func (n *Node) Msg(str string) {
-	log.Println(fmt.Sprintf("[node]%s[msg]%s", n.Cfg.Rpc, str))
+	log.Println(fmt.Sprintf("[node]%s [msg]%s", n.Cfg.Rpc, str))
 }
 
 func (n *Node) rpcResult(method string, params []interface{}) ([]byte, error) {

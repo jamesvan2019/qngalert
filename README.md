@@ -43,6 +43,10 @@
 ### Got Telegram ChatId
 
 ```bash
+# create a telegram bot
+
+add @botfather contact
+
 # token use own
 visit https://api.telegram.org/bot<token>/getUpdates
 ```
