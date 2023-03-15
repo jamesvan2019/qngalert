@@ -15,6 +15,8 @@ type Clients []Notify
 func (nc *Clients) Send(title, content string) {
 	for _, c := range *nc {
 		err := c.Notify(title, content)
-		log.Println("发送通知失败", err)
+		if err != nil {
+			log.Println("发送通知失败", err)
+		}
 	}
 }
