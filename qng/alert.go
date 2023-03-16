@@ -99,6 +99,10 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 				StateRootObj.lock.Unlock()
 			}
 			// 2023-03-15T14:04:09+08:00
+			gap := int64(0)
+			if strings.Contains(blockDetail.Result.Timestamp, "-04:00") {
+				gap = 4 * 3600
+			}
 			time1 := strings.ReplaceAll(blockDetail.Result.Timestamp, "-04:00", "")
 			time1 = strings.ReplaceAll(time1, "+08:00", "")
 
@@ -107,7 +111,7 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 				n.ErrorMsg(time1+" timestamp parse error", err)
 				continue
 			}
-			if time.Now().Unix()-t1.Unix() >= n.Cfg.Alert.MaxBlockTime {
+			if time.Now().Unix()-t1.Unix()-gap >= n.Cfg.Alert.MaxBlockTime {
 				n.NotifyClients.Send("miner alert",
 					n.ErrorMsgFormat("long time not got new block",
 						fmt.Errorf("latest order:%d , latest block time:%s | long time not got new block",
