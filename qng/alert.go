@@ -99,13 +99,8 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 				StateRootObj.lock.Unlock()
 			}
 			// 2023-03-15T14:04:09+08:00
-			time1 := ""
-			if strings.Contains(blockDetail.Result.Timestamp, "-") {
-				time1 = strings.Split(blockDetail.Result.Timestamp, "-")[0]
-			}
-			if strings.Contains(blockDetail.Result.Timestamp, "+") {
-				time1 = strings.Split(blockDetail.Result.Timestamp, "+")[0]
-			}
+			time1 := strings.ReplaceAll(blockDetail.Result.Timestamp, "-04:00", "")
+			time1 = strings.ReplaceAll(time1, "+08:00", "")
 
 			t1, err := time.Parse("2006-01-02T15:04:05", time1)
 			if err != nil {
