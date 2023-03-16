@@ -69,7 +69,9 @@ func main() {
 			return
 		}
 		wg.Add(1)
-		go nc.ListenNodeStatus(ctx, wg)
+		go func(nc1 *qng.Node) {
+			nc1.ListenNodeStatus(ctx, wg)
+		}(nc)
 	}
 	wg.Wait()
 }
