@@ -2,6 +2,7 @@ package qng
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
@@ -69,15 +70,19 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 				continue
 			}
 			if time.Now().Unix()-t1.Unix()-gap >= n.Cfg.Alert.MaxBlockTime {
-				n.NotifyClients.Send("miner alert",
-					n.ErrorMsgFormat("long time not got new block",
-						fmt.Errorf("latest order:%d , latest block time:%s | long time not got new block",
-							blockDetail.Result.Order, blockDetail.Result.Timestamp)))
+				n.GetMinerErrorTimes++
+				if n.GetMinerErrorTimes >= n.Cfg.Alert.MaxAllowErrorTimes {
+					n.NotifyClients.Send("miner alert",
+						n.ErrorMsgFormat("long time not got new block",
+							fmt.Errorf("latest order:%d , latest block time:%s | long time not got new block",
+								blockDetail.Result.Order, blockDetail.Result.Timestamp)))
+				}
 				continue
 			}
-
-			n.Msg(fmt.Sprintf("node normal | latest order :%d | latest mining time:%s", n.LastestOrder, blockDetail.Result.Timestamp))
-			n.Msg(fmt.Sprintf("stateroot:%v", StateRootObj.StateRoots[order]))
+			n.GetMinerErrorTimes = 0
+			n.Msg(fmt.Sprintf("[node normal] | latest order :%d | latest mining time:%s", n.LastestOrder, blockDetail.Result.Timestamp))
+			b, _ := json.Marshal(StateRootObj.StateRoots[order])
+			n.Msg(fmt.Sprintf("[stateroot]:%v", string(b)))
 		}
 	}
 }

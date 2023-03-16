@@ -19,7 +19,7 @@ func (t *TelegramBot) Init(cfg *config.Config) error {
 		log.Println(err)
 		return err
 	}
-	bot.Debug = true
+	//bot.Debug = true
 	t.api = bot
 	return nil
 }

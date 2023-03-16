@@ -19,6 +19,7 @@ type Node struct {
 	GetBlockCountErrorTimes   int64
 	GetBlockByOrderErrorTimes int64
 	GetStateRootErrorTimes    int64
+	GetMinerErrorTimes        int64
 	LastestOrder              int64
 	NotifyClients             notify.Clients
 }
