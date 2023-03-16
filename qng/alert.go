@@ -104,7 +104,7 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 
 			t1, err := time.Parse("2006-01-02T15:04:05", time1)
 			if err != nil {
-				n.ErrorMsg("timestamp parse error", err)
+				n.ErrorMsg(time1+" timestamp parse error", err)
 				continue
 			}
 			if time.Now().Unix()-t1.Unix() >= n.Cfg.Alert.MaxBlockTime {
