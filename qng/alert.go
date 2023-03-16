@@ -61,8 +61,12 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 			if strings.Contains(blockDetail.Result.Timestamp, "-04:00") {
 				gap = 4 * 3600
 			}
+			if strings.Contains(blockDetail.Result.Timestamp, "Z") {
+				gap = 8 * 3600
+			}
 			time1 := strings.ReplaceAll(blockDetail.Result.Timestamp, "-04:00", "")
 			time1 = strings.ReplaceAll(time1, "+08:00", "")
+			time1 = strings.ReplaceAll(time1, "Z", "")
 
 			t1, err := time.Parse("2006-01-02T15:04:05", time1)
 			if err != nil {
