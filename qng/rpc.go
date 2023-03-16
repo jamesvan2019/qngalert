@@ -23,8 +23,8 @@ type Node struct {
 	NotifyClients             notify.Clients
 }
 
-func (n *Node) Init(cfg *config.Node, ns notify.Clients) error {
-	n.Cfg = cfg
+func (n *Node) Init(cfg config.Node, ns notify.Clients) error {
+	n.Cfg = &cfg
 	n.NotifyClients = ns
 	return nil
 }

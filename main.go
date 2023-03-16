@@ -63,15 +63,13 @@ func main() {
 	go handleSignal(wg, quit, cancel)
 	for _, n := range cfg.Nodes {
 		nc := &qng.Node{}
-		err = nc.Init(&n, notifyClients)
+		err = nc.Init(n, notifyClients)
 		if err != nil {
 			log.Fatalln(err)
 			return
 		}
 		wg.Add(1)
-		go func(nc1 *qng.Node) {
-			nc1.ListenNodeStatus(ctx, wg)
-		}(nc)
+		go nc.ListenNodeStatus(ctx, wg)
 	}
 	wg.Wait()
 }
