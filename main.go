@@ -51,6 +51,10 @@ func main() {
 		}
 		notifyClients = append(notifyClients, tgInstance)
 	}
+	qng.StateRootObj = qng.StateRootObjStruct{
+		StateRoots:    map[int64]qng.StateRoot{},
+		StateRootsArr: []int64{},
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)

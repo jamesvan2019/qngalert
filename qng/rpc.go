@@ -18,6 +18,7 @@ type Node struct {
 	Cfg                       *config.Node
 	GetBlockCountErrorTimes   int64
 	GetBlockByOrderErrorTimes int64
+	GetStateRootErrorTimes    int64
 	LastestOrder              int64
 	NotifyClients             notify.Clients
 }

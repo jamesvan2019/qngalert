@@ -48,3 +48,25 @@ func (n *Node) GetBlockByOrder(order int64) (*BlockOrderResult, error) {
 	n.GetBlockByOrderErrorTimes = 0
 	return &r, nil
 }
+
+func (n *Node) GetStateRoot(order int64) (*StateRootResult, error) {
+	b, err := n.rpcResult("getStateRoot", []interface{}{order, true})
+	if err != nil {
+		n.ErrorMsg("getStateRoot Exception", err)
+		n.GetStateRootErrorTimes++
+		return nil, err
+	}
+	var r StateRootResult
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		n.ErrorMsg("getStateRoot Unmarshal Exception", err)
+		n.GetStateRootErrorTimes++
+		return nil, err
+	}
+	if r.Result.Height < 1 {
+		n.GetStateRootErrorTimes++
+		return nil, fmt.Errorf("getStateRoot %d Result Exception", order)
+	}
+	n.GetStateRootErrorTimes = 0
+	return &r, nil
+}
