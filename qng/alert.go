@@ -3,6 +3,7 @@ package qng
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 )
@@ -98,12 +99,20 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 				StateRootObj.lock.Unlock()
 			}
 			// 2023-03-15T14:04:09+08:00
-			t1, err := time.Parse("2006-01-02T15:04:05+08:00", blockDetail.Result.Timestamp)
+			time1 := ""
+			if strings.Contains(blockDetail.Result.Timestamp, "-") {
+				time1 = strings.Split(blockDetail.Result.Timestamp, "-")[0]
+			}
+			if strings.Contains(blockDetail.Result.Timestamp, "+") {
+				time1 = strings.Split(blockDetail.Result.Timestamp, "+")[0]
+			}
+
+			t1, err := time.Parse("2006-01-02T15:04:05", time1)
 			if err != nil {
 				n.ErrorMsg("timestamp parse error", err)
 				continue
 			}
-			if time.Now().Unix()+8*3600-t1.Unix() >= n.Cfg.Alert.MaxBlockTime {
+			if time.Now().Unix()-t1.Unix() >= n.Cfg.Alert.MaxBlockTime {
 				n.NotifyClients.Send("miner alert",
 					n.ErrorMsgFormat("long time not got new block",
 						fmt.Errorf("latest order:%d , latest block time:%s | long time not got new block",
