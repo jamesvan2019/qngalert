@@ -112,6 +112,7 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 			}
 
 			n.Msg(fmt.Sprintf("node normal | latest order :%d | latest mining time:%s", n.LastestOrder, blockDetail.Result.Timestamp))
+			n.Msg(fmt.Sprintf("stateroot:%v", StateRootObj.StateRoots[order]))
 		}
 	}
 }
