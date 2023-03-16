@@ -16,11 +16,12 @@ type Tg struct {
 }
 
 type Node struct {
-	Rpc   string `json:"rpc"`
-	User  string `json:"user"`
-	Pass  string `json:"pass"`
-	Alert Alert  `json:"alert"`
-	Gap   int64  `json:"gap"`
+	Rpc          string `json:"rpc"`
+	User         string `json:"user"`
+	Pass         string `json:"pass"`
+	Alert        Alert  `json:"alert"`
+	Gap          int64  `json:"gap"`
+	UseStateRoot bool   `json:"useStateRoot"`
 }
 
 type Alert struct {

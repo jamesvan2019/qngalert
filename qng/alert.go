@@ -51,52 +51,9 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 					continue
 				}
 
-				stateRoot, err := n.GetStateRoot(order)
-				if err != nil {
-					if n.GetStateRootErrorTimes >= n.Cfg.Alert.MaxAllowErrorTimes {
-						//
-						n.NotifyClients.Send("node exception",
-							n.ErrorMsgFormat("GetStateRoot Rpc Exception many times,please check", err))
-					}
-					continue
+				if n.Cfg.UseStateRoot {
+					n.CompareStateRoot(order)
 				}
-				stateRoot.Result.Node = n.Cfg.Rpc
-				StateRootObj.lock.Lock()
-				if _, ok := StateRootObj.StateRoots[order]; !ok {
-					StateRootObj.StateRoots[order] = stateRoot.Result
-					if len(StateRootObj.StateRootsArr) > 20 {
-						delete(StateRootObj.StateRoots, StateRootObj.StateRootsArr[0])
-						StateRootObj.StateRootsArr = StateRootObj.StateRootsArr[1:]
-					}
-					StateRootObj.StateRootsArr = append(StateRootObj.StateRootsArr, order)
-				} else {
-					// compare start
-					target := StateRootObj.StateRoots[order]
-					if stateRoot.Result.Valid != target.Valid {
-						n.NotifyClients.Send("node valid not equal",
-							n.ErrorMsgFormat("node valid not equal,please check",
-								fmt.Errorf("target node:%s,order:%d valid:%v | node:%s,order:%d valid:%v",
-									target.Node, target.Order, target.Valid, stateRoot.Result.Node, order, stateRoot.Result.Valid)))
-						continue
-					}
-					if stateRoot.Result.Hash != target.Hash {
-						n.NotifyClients.Send("node hash not equal",
-							n.ErrorMsgFormat("node hash not equal,please check",
-								fmt.Errorf("target node:%s,order:%d hash:%v | node:%s,order:%d hash:%v",
-									target.Node, target.Order, target.Hash, stateRoot.Result.Node, order, stateRoot.Result.Hash)))
-						continue
-					}
-					if stateRoot.Result.StateRoot != target.StateRoot {
-						n.NotifyClients.Send("node StateRoot not equal",
-							n.ErrorMsgFormat("node StateRoot not equal,please check",
-								fmt.Errorf("target node:%s,order:%d stateroot:%v ,number:%d | node:%s,order:%d stateroot:%v,number:%d",
-									target.Node, target.Order, target.StateRoot, target.Number, stateRoot.Result.Node, order,
-									stateRoot.Result.StateRoot, stateRoot.Result.Number)))
-						continue
-					}
-				}
-				// compare end
-				StateRootObj.lock.Unlock()
 			}
 			// 2023-03-15T14:04:09+08:00
 			gap := int64(0)

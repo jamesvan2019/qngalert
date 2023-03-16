@@ -21,7 +21,8 @@
       "alert":{
         "maxAllowErrorTimes": 3,
         "maxBlockTime": 600
-      }
+      },
+      "useStateRoot":false
     }
   ]
 }
