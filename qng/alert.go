@@ -128,7 +128,7 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 			globalParam.Lock.Lock()
 			_, ok := globalParam.PrintLine[n.ReqTimes]
 			if !ok {
-				globalParam.PrintLine[count] = 1
+				globalParam.PrintLine[n.ReqTimes] = 1
 				fmt.Println("=======================", n.ReqTimes, "==========================")
 			}
 			globalParam.Lock.Unlock()
