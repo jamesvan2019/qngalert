@@ -108,31 +108,7 @@ func (t *WhatsappBot) Stop() {
 	t.api.Disconnect()
 }
 func (t *WhatsappBot) Login() error {
-	if t.api.Store.ID == nil {
-		// No ID stored, new login
-		qrChan, _ := t.api.GetQRChannel(context.Background())
-		err := t.api.Connect()
-		if err != nil {
-			panic(err)
-		}
-		for evt := range qrChan {
-			if evt.Event == "code" {
-				// Render the QR code here
-				// e.g. qrterminal.GenerateHalfBlock(evt.Code, qrterminal.L, os.Stdout)
-				// or just manually `echo 2@... | qrencode -t ansiutf8` in a terminal
-				fmt.Println("QR code:", evt.Code)
-			} else {
-				fmt.Println("Login event:", evt.Event)
-			}
-		}
-	} else {
-		// Already logged in, just connect
-		err := t.api.Connect()
-		if err != nil {
-			panic(err)
-		}
-	}
-	t.ListGroup()
+	//t.ListGroup()
 	return nil
 }
 
