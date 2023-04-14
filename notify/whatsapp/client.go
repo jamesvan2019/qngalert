@@ -134,7 +134,7 @@ func parseJID(arg string) (types.JID, bool) {
 func (t *WhatsappBot) Notify(title, content string) error {
 	str := fmt.Sprintf("%s\n%s", title, content)
 	msg := &waProto.Message{Conversation: proto.String(str)}
-	recipient, ok := parseJID("")
+	recipient, ok := parseJID("120363120359891292@g.us")
 	if !ok {
 		return errors.New("JID not exist")
 	}
