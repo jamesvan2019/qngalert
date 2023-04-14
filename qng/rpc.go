@@ -17,11 +17,14 @@ import (
 type Node struct {
 	Cfg                       *config.Node
 	GetBlockCountErrorTimes   int64
+	GetPeersErrorTimes        int64
+	GetMempoolErrorTimes      int64
 	GetBlockByOrderErrorTimes int64
 	GetStateRootErrorTimes    int64
 	GetMinerErrorTimes        int64
 	LastestOrder              int64
 	NotifyClients             notify.Clients
+	ReqTimes                  int64
 }
 
 func (n *Node) Init(cfg config.Node, ns notify.Clients) error {

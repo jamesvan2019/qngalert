@@ -27,6 +27,56 @@ func (n *Node) GetBlockCount() (int64, error) {
 	return r.Result - 1, nil
 }
 
+func (n *Node) GetPeers() (int64, error) {
+	b, err := n.rpcResult("getPeerInfo", []interface{}{})
+	if err != nil {
+		n.ErrorMsg("GetPeersErrorTimes Exception", err)
+		n.GetPeersErrorTimes++
+		return 0, err
+	}
+	var r PeerInfoResult
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		n.ErrorMsg("GetPeersErrorTimes Unmarshal Exception", err)
+		n.GetPeersErrorTimes++
+		return 0, err
+	}
+	if len(r.Result) < 1 {
+		n.GetPeersErrorTimes++
+		n.ErrorMsg("Result Exception", fmt.Errorf("GetPeersErrorTimes Result is 0"))
+	}
+	n.GetPeersErrorTimes = 0
+	connected := int64(0)
+	for _, v := range r.Result {
+		if v.State == "connected" && v.Services != "Relay" {
+			connected++
+		}
+	}
+	return connected, nil
+}
+
+func (n *Node) GetMempoolCount() (int64, error) {
+	b, err := n.rpcResult("getMempool", []interface{}{"", false})
+	if err != nil {
+		n.ErrorMsg("GetMempoolErrorTimes Exception", err)
+		n.GetMempoolErrorTimes++
+		return 0, err
+	}
+	var r MempoolResult
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		n.ErrorMsg("GetMempoolErrorTimes Unmarshal Exception", err)
+		n.GetMempoolErrorTimes++
+		return 0, err
+	}
+	if len(r.Result) < 1 {
+		n.GetMempoolErrorTimes++
+		n.ErrorMsg("Result Exception", fmt.Errorf("GetMempoolErrorTimes Result is 0"))
+	}
+	n.GetMempoolErrorTimes = 0
+	return int64(len(r.Result)), nil
+}
+
 func (n *Node) GetBlockByOrder(order int64) (*BlockOrderResult, error) {
 	b, err := n.rpcResult("getBlockByOrder", []interface{}{order, true})
 	if err != nil {

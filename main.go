@@ -12,6 +12,7 @@ import (
 	"qngalert/notify"
 	"qngalert/notify/email"
 	"qngalert/notify/tg"
+	"qngalert/notify/whatsapp"
 	"qngalert/qng"
 	"sync"
 	"syscall"
@@ -51,26 +52,40 @@ func main() {
 		}
 		notifyClients = append(notifyClients, tgInstance)
 	}
+	// whatsapp
+	whatsappClient := &whatsapp.WhatsappBot{}
+	whatsappClient.Init(&cfg)
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		wg.Done()
+		err := whatsappClient.Login()
+		if err != nil {
+			log.Fatalln("whatsapp login failed", err)
+			return
+		}
+		notifyClients = append(notifyClients, whatsappClient)
+	}()
 	qng.StateRootObj = qng.StateRootObjStruct{
 		StateRoots:    map[int64]qng.StateRoot{},
 		StateRootsArr: []int64{},
 	}
-	ctx, cancel := context.WithCancel(context.Background())
+	_, cancel := context.WithCancel(context.Background())
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-	wg := &sync.WaitGroup{}
+
 	wg.Add(1)
 	go handleSignal(wg, quit, cancel)
-	for _, n := range cfg.Nodes {
-		nc := &qng.Node{}
-		err = nc.Init(n, notifyClients)
-		if err != nil {
-			log.Fatalln(err)
-			return
-		}
-		wg.Add(1)
-		go nc.ListenNodeStatus(ctx, wg)
-	}
+	//for _, n := range cfg.Nodes {
+	//	nc := &qng.Node{}
+	//	err = nc.Init(n, notifyClients)
+	//	if err != nil {
+	//		log.Fatalln(err)
+	//		return
+	//	}
+	//	wg.Add(1)
+	//	go nc.ListenCheckPeers(ctx, wg)
+	//}
 	wg.Wait()
 }
 func handleSignal(wg *sync.WaitGroup, c chan os.Signal, cancel context.CancelFunc) {

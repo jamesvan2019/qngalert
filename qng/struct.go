@@ -6,6 +6,25 @@ type BlockCountResult struct {
 	Result int64 `json:"result"`
 }
 
+type PeerInfoResult struct {
+	Result []PeerInfo `json:"result"`
+}
+
+type MempoolResult struct {
+	Result []string `json:"result"`
+}
+
+type GraphState struct {
+	MainOrder int `json:"mainorder"`
+}
+
+type PeerInfo struct {
+	Address    string     `json:"address"`
+	State      string     `json:"state"`    //connected
+	Services   string     `json:"services"` // Relay | Full|Bloom|CF
+	GraphState GraphState `json:"graphstate"`
+}
+
 type BlockOrderResult struct {
 	Result struct {
 		Timestamp    string        `json:"timestamp"`

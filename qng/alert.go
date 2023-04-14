@@ -3,11 +3,24 @@ package qng
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"math"
 	"strings"
 	"sync"
 	"time"
 )
+
+type GlobalRecords struct {
+	MemPoolCount map[int64]int64
+	Lock         sync.Mutex
+	PrintLine    map[int64]int64
+}
+
+var globalParam = GlobalRecords{
+	MemPoolCount: map[int64]int64{},
+	PrintLine:    map[int64]int64{},
+}
 
 func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
@@ -87,6 +100,54 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 			n.Msg(fmt.Sprintf("[node normal] | latest order :%d | latest mining time:%s", n.LastestOrder, blockDetail.Result.Timestamp))
 			b, _ := json.Marshal(StateRootObj.StateRoots[order])
 			n.Msg(fmt.Sprintf("[stateroot]:%v", string(b)))
+		}
+	}
+}
+
+func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
+	t := time.NewTicker(time.Duration(n.Cfg.Gap) * time.Second)
+	defer t.Stop()
+	n.Msg("start ListenCheckPeers Service")
+	for {
+		select {
+		case <-ctx.Done():
+			n.Msg("stop ListenCheckPeers Service,exit...")
+			return
+		case <-t.C:
+			n.ReqTimes++
+			count, err := n.GetPeers()
+			if err != nil {
+				if n.GetPeersErrorTimes >= n.Cfg.Alert.MaxAllowErrorTimes {
+					//
+					n.NotifyClients.Send("node peers exception",
+						n.ErrorMsgFormat("GetPeers Rpc Exception many times,please check", err))
+				}
+				continue
+			}
+			globalParam.Lock.Lock()
+			_, ok := globalParam.PrintLine[count]
+			if !ok {
+				globalParam.PrintLine[count] = 1
+				fmt.Println("========================= order", count, "========================")
+			}
+			globalParam.Lock.Unlock()
+			if count < 3 {
+				n.NotifyClients.Send("node peers exception",
+					n.ErrorMsgFormat("GetPeers Rpc Exception many times,please check", errors.New("peers too less")))
+			}
+			count1, _ := n.GetMempoolCount()
+			globalParam.Lock.Lock()
+			targetCount, ok := globalParam.MemPoolCount[n.ReqTimes]
+			if !ok {
+				globalParam.MemPoolCount[n.ReqTimes] = count1
+			}
+			globalParam.Lock.Unlock()
+			if targetCount > 0 && math.Abs(float64(targetCount-count1)) > 10 {
+				n.NotifyClients.Send("node peers exception",
+					n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | target:%d | current:%d ", n.ReqTimes, targetCount, count1), errors.New("mempool wrong")))
+			}
+			n.Msg(fmt.Sprintf("[node normal] | peersCount :%d | mempool:%d", count, count1))
 		}
 	}
 }
