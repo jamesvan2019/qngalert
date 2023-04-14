@@ -72,6 +72,7 @@ func (n *Node) GetMempoolCount() (int64, error) {
 	if len(r.Result) < 1 {
 		n.GetMempoolErrorTimes++
 		n.ErrorMsg("Result Exception", fmt.Errorf("GetMempoolErrorTimes Result is 0"))
+		return 0, fmt.Errorf("GetMempoolErrorTimes Result is 0")
 	}
 	n.GetMempoolErrorTimes = 0
 	return int64(len(r.Result)), nil
