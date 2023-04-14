@@ -3,6 +3,7 @@ package qng
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 func (n *Node) GetBlockCount() (int64, error) {
@@ -55,7 +56,7 @@ func (n *Node) GetPeers() (int64, error) {
 	return connected, nil
 }
 
-func (n *Node) GetMempoolCount() (int64, error) {
+func (n *Node) GetMempoolCount(retry bool) (int64, error) {
 	b, err := n.rpcResult("getMempool", []interface{}{"", false})
 	if err != nil {
 		n.ErrorMsg("GetMempoolErrorTimes Exception", err)
@@ -69,10 +70,9 @@ func (n *Node) GetMempoolCount() (int64, error) {
 		n.GetMempoolErrorTimes++
 		return 0, err
 	}
-	if len(r.Result) < 1 {
-		n.GetMempoolErrorTimes++
-		n.ErrorMsg("Result Exception", fmt.Errorf("GetMempoolErrorTimes Result is 0"))
-		return 0, fmt.Errorf("GetMempoolErrorTimes Result is 0")
+	if len(r.Result) < 1 && !retry {
+		<-time.After(5 * time.Second) // 5s 重试
+		return n.GetMempoolCount(true)
 	}
 	n.GetMempoolErrorTimes = 0
 	return int64(len(r.Result)), nil
