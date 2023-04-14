@@ -125,7 +125,7 @@ func CheckTx(ctx context.Context, client *ethclient.Client, tx string) bool {
 			times++
 			txD, err := client.TransactionReceipt(ctx, common.HexToHash(tx))
 			if err != nil {
-				log.Println(tx, "TransactionReceipt Got Error", err)
+				log.Println(tx, "TransactionReceipt Not Found Need Wait...")
 				continue
 			}
 			if txD != nil {
