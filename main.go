@@ -56,7 +56,6 @@ func main() {
 	whatsappClient := &whatsapp.WhatsappBot{}
 	whatsappClient.Init(&cfg)
 	wg := &sync.WaitGroup{}
-	wg.Add(1)
 	notifyClients = append(notifyClients, whatsappClient)
 	qng.StateRootObj = qng.StateRootObjStruct{
 		StateRoots:    map[int64]qng.StateRoot{},
@@ -79,6 +78,7 @@ func main() {
 		go nc.ListenCheckPeers(ctx, wg)
 	}
 	wg.Wait()
+	whatsappClient.Stop()
 }
 func handleSignal(wg *sync.WaitGroup, c chan os.Signal, cancel context.CancelFunc) {
 	defer wg.Done()
