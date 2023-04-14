@@ -5,11 +5,13 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"qngalert/config"
+	"time"
 )
 
 type TelegramBot struct {
-	api *tgbotapi.BotAPI
-	Cfg *config.Config
+	api      *tgbotapi.BotAPI
+	Cfg      *config.Config
+	lastSend int64
 }
 
 func (t *TelegramBot) Init(cfg *config.Config) error {
@@ -25,6 +27,10 @@ func (t *TelegramBot) Init(cfg *config.Config) error {
 }
 
 func (t *TelegramBot) Notify(title, content string) error {
+	if time.Now().Unix()-t.lastSend < 600 { // 10分钟内不重发
+		return nil
+	}
+	t.lastSend = time.Now().Unix()
 	str := fmt.Sprintf("%s\n%s", title, content)
 	msg := tgbotapi.NewMessage(t.Cfg.Tg.ChatID, str)
 	_, err := t.api.Send(msg)

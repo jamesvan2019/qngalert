@@ -24,8 +24,9 @@ import (
 )
 
 type WhatsappBot struct {
-	api *whatsmeow.Client
-	Cfg *config.Config
+	api      *whatsmeow.Client
+	Cfg      *config.Config
+	lastSend int64
 }
 
 var logLevel = "INFO"
@@ -132,6 +133,10 @@ func parseJID(arg string) (types.JID, bool) {
 }
 
 func (t *WhatsappBot) Notify(title, content string) error {
+	if time.Now().Unix()-t.lastSend < 600 { // 10分钟内不重发
+		return nil
+	}
+	t.lastSend = time.Now().Unix()
 	str := fmt.Sprintf("%s\n%s", title, content)
 	msg := &waProto.Message{Conversation: proto.String(str)}
 	recipient, ok := parseJID("120363120359891292@g.us")
