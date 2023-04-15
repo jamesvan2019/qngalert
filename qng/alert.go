@@ -135,6 +135,8 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 			if count < 10 {
 				n.NotifyClients.Send("node peers exception",
 					n.ErrorMsgFormat("peer nodes count less than 10,please check", errors.New("peers too less")))
+				n.ResetPeer()
+				continue
 			}
 			count1, _ := n.GetMempoolCount(false)
 			globalParam.Lock.Lock()
