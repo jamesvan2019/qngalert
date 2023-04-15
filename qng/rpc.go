@@ -25,7 +25,6 @@ type Node struct {
 	GetMinerErrorTimes        int64
 	LastestOrder              int64
 	NotifyClients             notify.Clients
-	ReqTimes                  int64
 	lastReset                 int64
 	zhangben                  int64
 }

@@ -114,7 +114,8 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		default:
 			<-time.After(30 * time.Second)
-			n.ReqTimes++
+			t1 := time.Now().Unix()
+			reqTime := t1 - t1%30
 			count, err := n.GetPeers()
 			if err != nil {
 				if n.GetPeersErrorTimes >= n.Cfg.Alert.MaxAllowErrorTimes {
@@ -125,10 +126,10 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 				continue
 			}
 			globalParam.Lock.Lock()
-			_, ok := globalParam.PrintLine[n.ReqTimes]
+			_, ok := globalParam.PrintLine[reqTime]
 			if !ok {
-				globalParam.PrintLine[n.ReqTimes] = 1
-				fmt.Println("=======================", n.ReqTimes, "==========================")
+				globalParam.PrintLine[reqTime] = 1
+				fmt.Println("=======================", reqTime, "==========================")
 			}
 			globalParam.Lock.Unlock()
 			if count < 3 {
@@ -137,10 +138,10 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 			}
 			count1, _ := n.GetMempoolCount(false)
 			globalParam.Lock.Lock()
-			targetCount, ok := globalParam.MemPoolCount[n.ReqTimes]
+			targetCount, ok := globalParam.MemPoolCount[reqTime]
 			if !ok {
 				if count1 > 0 {
-					globalParam.MemPoolCount[n.ReqTimes] = count1
+					globalParam.MemPoolCount[reqTime] = count1
 				}
 			}
 			globalParam.Lock.Unlock()
@@ -152,7 +153,7 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 				if n.zhangben > 20 {
 					msg = "可能是账本问题"
 					n.NotifyClients.Send("node peers exception:"+msg,
-						n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", n.ReqTimes, targetCount, count1), errors.New("memorypool poor connection")))
+						n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", reqTime, targetCount, count1), errors.New("memorypool poor connection")))
 					continue
 				}
 				if count1 == 0 {
@@ -161,7 +162,7 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 						n.MempoolEmptyTimes = 0
 						msg = "mempool同步问题 需要reset"
 						n.NotifyClients.Send("node peers exception:"+msg,
-							n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", n.ReqTimes, targetCount, count1), errors.New("memorypool poor connection")))
+							n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", reqTime, targetCount, count1), errors.New("memorypool poor connection")))
 						n.ResetPeer()
 						continue
 					}
