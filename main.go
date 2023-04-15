@@ -79,7 +79,7 @@ func main() {
 	}
 	//wg.Add(1)
 	//go ListenSendTx(ctx, wg, notifyClients)
-	//wg.Wait()
+	wg.Wait()
 	whatsappClient.Stop()
 }
 func handleSignal(wg *sync.WaitGroup, c chan os.Signal, cancel context.CancelFunc) {
