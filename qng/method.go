@@ -121,3 +121,18 @@ func (n *Node) GetStateRoot(order int64) (*StateRootResult, error) {
 	n.GetStateRootErrorTimes = 0
 	return &r, nil
 }
+
+func (n *Node) ResetPeer() error {
+	b, err := n.rpcResultLong("p2p_resetPeers", []interface{}{})
+	if err != nil {
+		n.ErrorMsg("p2p_resetPeers Exception", err)
+		return err
+	}
+	var r ResetPeersResult
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		n.ErrorMsg("p2p_resetPeers Unmarshal Exception", err)
+		return err
+	}
+	return nil
+}

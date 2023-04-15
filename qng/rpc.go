@@ -5,7 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -46,6 +46,18 @@ func (n *Node) Msg(str string) {
 }
 
 func (n *Node) rpcResult(method string, params []interface{}) ([]byte, error) {
+	// Create the new HTTP client that is configured according to the user-
+	// specified options and submit the request.
+	return n.reqNode(time.Duration(10), method, params)
+}
+
+func (n *Node) rpcResultLong(method string, params []interface{}) ([]byte, error) {
+	// Create the new HTTP client that is configured according to the user-
+	// specified options and submit the request.
+	return n.reqNode(time.Duration(3600), method, params)
+}
+
+func (n *Node) reqNode(timeout time.Duration, method string, params []interface{}) ([]byte, error) {
 	paramStr, err := json.Marshal(params)
 	if err != nil {
 		n.ErrorMsg("rpc params error:", err)
@@ -63,9 +75,6 @@ func (n *Node) rpcResult(method string, params []interface{}) ([]byte, error) {
 	httpRequest.Header.Set("Connection", "close")
 	// Configure basic access authorization.
 	httpRequest.SetBasicAuth(n.Cfg.User, n.Cfg.Pass)
-
-	// Create the new HTTP client that is configured according to the user-
-	// specified options and submit the request.
 	httpClient := http.Client{
 		Transport: &http.Transport{
 			DisableKeepAlives: true,
@@ -73,7 +82,7 @@ func (n *Node) rpcResult(method string, params []interface{}) ([]byte, error) {
 			TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
 		},
 	}
-	httpClient.Timeout = 10 * time.Second
+	httpClient.Timeout = timeout * time.Second
 	httpResponse, err := httpClient.Do(httpRequest)
 	if err != nil {
 		n.ErrorMsg("rpc request faild", err)
@@ -82,7 +91,7 @@ func (n *Node) rpcResult(method string, params []interface{}) ([]byte, error) {
 	defer func() {
 		_ = httpResponse.Body.Close()
 	}()
-	body, err := ioutil.ReadAll(httpResponse.Body)
+	body, err := io.ReadAll(httpResponse.Body)
 
 	if err != nil {
 		n.ErrorMsg("error reading json reply:", err)

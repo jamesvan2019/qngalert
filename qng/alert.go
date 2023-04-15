@@ -139,15 +139,16 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 			count1, _ := n.GetMempoolCount(false)
 			globalParam.Lock.Lock()
 			targetCount, ok := globalParam.MemPoolCount[n.ReqTimes]
-			if !ok && count1 > 0 {
-				globalParam.MemPoolCount[n.ReqTimes] = count1
-			} else {
-				targetCount = 0
+			if !ok {
+				if count1 > 0 {
+					globalParam.MemPoolCount[n.ReqTimes] = count1
+				}
 			}
 			globalParam.Lock.Unlock()
 			if targetCount > 0 && (math.Abs(float64(targetCount-count1)) > 10 || count1 == 0) {
 				n.NotifyClients.Send("node peers exception",
 					n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", n.ReqTimes, targetCount, count1), errors.New("memorypool poor connection")))
+				continue
 			}
 			n.Msg(fmt.Sprintf("[node normal] | peersCount :%d | mempool:%d", count, count1))
 		}

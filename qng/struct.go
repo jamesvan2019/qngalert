@@ -49,6 +49,10 @@ type StateRootResult struct {
 	Result StateRoot `json:"result"`
 }
 
+type ResetPeersResult struct {
+	Result interface{} `json:"result"`
+}
+
 type StateRootObjStruct struct {
 	StateRoots    map[int64]StateRoot
 	StateRootsArr []int64
