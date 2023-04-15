@@ -10,6 +10,10 @@ type PeerInfoResult struct {
 	Result []PeerInfo `json:"result"`
 }
 
+type NodeInfoResult struct {
+	Result NodeInfo `json:"result"`
+}
+
 type MempoolResult struct {
 	Result []string `json:"result"`
 }
@@ -23,6 +27,11 @@ type PeerInfo struct {
 	State      string     `json:"state"`    //connected
 	Services   string     `json:"services"` // Relay | Full|Bloom|CF
 	GraphState GraphState `json:"graphstate"`
+}
+
+type NodeInfo struct {
+	Buildversion string `json:"buildversion"`
+	ID           string `json:"ID"`
 }
 
 type BlockOrderResult struct {

@@ -56,6 +56,24 @@ func (n *Node) GetPeers() (int64, error) {
 	return connected, nil
 }
 
+func (n *Node) GetNodeInfo() (*NodeInfo, error) {
+	b, err := n.rpcResult("getNodeInfo", []interface{}{})
+	if err != nil {
+		n.ErrorMsg("GetPeersErrorTimes Exception", err)
+		n.GetPeersErrorTimes++
+		return nil, err
+	}
+	var r NodeInfoResult
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		n.ErrorMsg("GetPeersErrorTimes Unmarshal Exception", err)
+		n.GetPeersErrorTimes++
+		return nil, err
+	}
+	n.GetPeersErrorTimes = 0
+	return &r.Result, nil
+}
+
 func (n *Node) GetMempoolCount(retry bool) (int64, error) {
 	b, err := n.rpcResult("getMempool", []interface{}{"", false})
 	if err != nil {

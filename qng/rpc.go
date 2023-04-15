@@ -27,6 +27,7 @@ type Node struct {
 	NotifyClients             notify.Clients
 	lastReset                 int64
 	zhangben                  int64
+	Node                      NodeInfo
 }
 
 func (n *Node) Init(cfg config.Node, ns notify.Clients) error {
@@ -36,15 +37,15 @@ func (n *Node) Init(cfg config.Node, ns notify.Clients) error {
 }
 
 func (n *Node) ErrorMsg(str string, err error) {
-	log.Println("[node]", n.Cfg.Rpc, "msg", str, "err", err)
+	log.Println("[node]", n.Cfg.Rpc, n.Node.ID, n.Node.Buildversion, "msg", str, "err", err)
 }
 
 func (n *Node) ErrorMsgFormat(str string, err error) string {
-	return fmt.Sprintf("[node]%s [msg] %s [err] %s", n.Cfg.Rpc, str, err.Error())
+	return fmt.Sprintf("[node]%s/%s/%s [msg] %s [err] %s", n.Cfg.Rpc, n.Node.ID, n.Node.Buildversion, str, err.Error())
 }
 
 func (n *Node) Msg(str string) {
-	log.Println(fmt.Sprintf("[node]%s [msg]%s", n.Cfg.Rpc, str))
+	log.Println(fmt.Sprintf("[node]%s/%s/%s [msg]%s", n.Cfg.Rpc, n.Node.ID, n.Node.Buildversion, str))
 }
 
 func (n *Node) rpcResult(method string, params []interface{}) ([]byte, error) {
