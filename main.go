@@ -77,9 +77,9 @@ func main() {
 		wg.Add(1)
 		go nc.ListenCheckPeers(ctx, wg)
 	}
-	wg.Add(1)
-	go ListenSendTx(ctx, wg, notifyClients)
-	wg.Wait()
+	//wg.Add(1)
+	//go ListenSendTx(ctx, wg, notifyClients)
+	//wg.Wait()
 	whatsappClient.Stop()
 }
 func handleSignal(wg *sync.WaitGroup, c chan os.Signal, cancel context.CancelFunc) {
