@@ -147,6 +147,7 @@ func (n *Node) ResetPeer() error {
 		return nil
 	}
 	n.lastReset = time.Now().Unix()
+	n.Msg("==================================执行p2p_resetPeers : " + time.Now().Format(time.RFC3339))
 	b, err := n.rpcResultLong("p2p_resetPeers", []interface{}{})
 	if err != nil {
 		n.ErrorMsg("p2p_resetPeers Exception", err)
@@ -158,5 +159,6 @@ func (n *Node) ResetPeer() error {
 		n.ErrorMsg("p2p_resetPeers Unmarshal Exception", err)
 		return err
 	}
+	n.Msg("==================================执行p2p_resetPeers 结束: " + time.Now().Format(time.RFC3339))
 	return nil
 }

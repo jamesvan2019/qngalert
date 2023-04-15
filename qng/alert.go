@@ -133,6 +133,11 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 			}
 			globalParam.Lock.Unlock()
 			if count < 10 {
+				if time.Now().Unix()-n.lastReset < 10*60 {
+					// 10分钟前刚执行过
+					n.ErrorMsg("p2p_resetPeers 10分钟前刚执行过", fmt.Errorf(""))
+					continue
+				}
 				n.NotifyClients.Send("node peers exception",
 					n.ErrorMsgFormat("peer nodes count less than 10,please check", errors.New("peers too less")))
 				n.ResetPeer()
@@ -162,6 +167,11 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 					n.MempoolEmptyTimes++
 					if n.MempoolEmptyTimes > 6 {
 						n.MempoolEmptyTimes = 0
+						if time.Now().Unix()-n.lastReset < 10*60 {
+							// 10分钟前刚执行过
+							n.ErrorMsg("p2p_resetPeers 10分钟前刚执行过", fmt.Errorf(""))
+							continue
+						}
 						msg = "mempool同步问题 需要reset"
 						n.NotifyClients.Send("node peers exception:"+msg,
 							n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", reqTime, targetCount, count1), errors.New("memorypool poor connection")))
