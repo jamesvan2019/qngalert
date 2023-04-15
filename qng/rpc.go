@@ -17,6 +17,7 @@ import (
 type Node struct {
 	Cfg                       *config.Node
 	GetBlockCountErrorTimes   int64
+	MempoolEmptyTimes         int64
 	GetPeersErrorTimes        int64
 	GetMempoolErrorTimes      int64
 	GetBlockByOrderErrorTimes int64

@@ -71,7 +71,7 @@ func (n *Node) GetMempoolCount(retry bool) (int64, error) {
 		return 0, err
 	}
 	if len(r.Result) < 1 && !retry {
-		<-time.After(5 * time.Second) // 5s 重试
+		<-time.After(10 * time.Second) // 5s 重试
 		return n.GetMempoolCount(true)
 	}
 	n.GetMempoolErrorTimes = 0
