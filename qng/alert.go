@@ -106,15 +106,14 @@ func (n *Node) ListenNodeStatus(ctx context.Context, wg *sync.WaitGroup) {
 
 func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
-	t := time.NewTicker(time.Duration(n.Cfg.Gap) * time.Second)
-	defer t.Stop()
 	n.Msg("start ListenCheckPeers Service")
 	for {
 		select {
 		case <-ctx.Done():
 			n.Msg("stop ListenCheckPeers Service,exit...")
 			return
-		case <-t.C:
+		default:
+			<-time.After(30 * time.Second)
 			n.ReqTimes++
 			count, err := n.GetPeers()
 			if err != nil {
