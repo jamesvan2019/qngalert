@@ -146,15 +146,25 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 			}
 			globalParam.Lock.Unlock()
 			if targetCount > 0 && (math.Abs(float64(targetCount-count1)) > 10 || count1 == 0) {
-				msg := "可能是共识问题"
+				if math.Abs(float64(targetCount-count1)) > 10 {
+					n.zhangben++
+				}
+				msg := ""
+				if n.zhangben > 20 {
+					msg = "可能是账本问题"
+					n.NotifyClients.Send("node peers exception:"+msg,
+						n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", n.ReqTimes, targetCount, count1), errors.New("memorypool poor connection")))
+					continue
+				}
 				if count1 == 0 {
 					msg = "mempool同步问题 需要reset"
+					n.NotifyClients.Send("node peers exception:"+msg,
+						n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", n.ReqTimes, targetCount, count1), errors.New("memorypool poor connection")))
+					n.ResetPeer()
 				}
-				n.NotifyClients.Send("node peers exception:"+msg,
-					n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", n.ReqTimes, targetCount, count1), errors.New("memorypool poor connection")))
-				n.ResetPeer()
 				continue
 			}
+			n.zhangben = 0
 			n.Msg(fmt.Sprintf("[node normal] | peersCount :%d | mempool:%d", count, count1))
 		}
 	}

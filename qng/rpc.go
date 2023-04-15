@@ -26,6 +26,7 @@ type Node struct {
 	NotifyClients             notify.Clients
 	ReqTimes                  int64
 	lastReset                 int64
+	zhangben                  int64
 }
 
 func (n *Node) Init(cfg config.Node, ns notify.Clients) error {
