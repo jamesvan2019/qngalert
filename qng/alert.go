@@ -162,9 +162,9 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 						n.NotifyClients.Send("node peers exception:"+msg,
 							n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", n.ReqTimes, targetCount, count1), errors.New("memorypool poor connection")))
 						n.ResetPeer()
+						continue
 					}
 				}
-				continue
 			}
 			n.MempoolEmptyTimes = 0
 			n.zhangben = 0
