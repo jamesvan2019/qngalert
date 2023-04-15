@@ -157,7 +157,8 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 				}
 				if count1 == 0 {
 					n.MempoolEmptyTimes++
-					if n.MempoolEmptyTimes > 5 {
+					if n.MempoolEmptyTimes > 6 {
+						n.MempoolEmptyTimes = 0
 						msg = "mempool同步问题 需要reset"
 						n.NotifyClients.Send("node peers exception:"+msg,
 							n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", n.ReqTimes, targetCount, count1), errors.New("memorypool poor connection")))
@@ -166,9 +167,8 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 					}
 				}
 			}
-			n.MempoolEmptyTimes = 0
 			n.zhangben = 0
-			n.Msg(fmt.Sprintf("[node normal] | peersCount :%d | mempool:%d", count, count1))
+			n.Msg(fmt.Sprintf("[node normal] | peersCount :%d | mempool:%d | zeroTimes:%d", count, count1, n.MempoolEmptyTimes))
 		}
 	}
 }
