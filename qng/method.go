@@ -123,6 +123,12 @@ func (n *Node) GetStateRoot(order int64) (*StateRootResult, error) {
 }
 
 func (n *Node) ResetPeer() error {
+	if time.Now().Unix()-n.lastReset < 10*60 {
+		// 10分钟前刚执行过
+		n.ErrorMsg("p2p_resetPeers 10分钟前刚执行过", fmt.Errorf(""))
+		return nil
+	}
+	n.lastReset = time.Now().Unix()
 	b, err := n.rpcResultLong("p2p_resetPeers", []interface{}{})
 	if err != nil {
 		n.ErrorMsg("p2p_resetPeers Exception", err)
