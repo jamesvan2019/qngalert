@@ -167,6 +167,9 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 					}
 				}
 			}
+			if targetCount == 0 && count1 == 0 {
+				n.MempoolEmptyTimes = 0
+			}
 			n.zhangben = 0
 			n.Msg(fmt.Sprintf("[node normal] | peersCount :%d | mempool:%d | zeroTimes:%d", count, count1, n.MempoolEmptyTimes))
 		}
