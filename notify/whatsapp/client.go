@@ -133,6 +133,7 @@ func parseJID(arg string) (types.JID, bool) {
 }
 
 func (t *WhatsappBot) Notify(title, content string) error {
+	return nil
 	if time.Now().Unix()-t.lastSend < 600 { // 10分钟内不重发
 		return nil
 	}
