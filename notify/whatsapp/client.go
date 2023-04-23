@@ -101,6 +101,7 @@ func (t *WhatsappBot) Init(cfg *config.Config) error {
 		log.Printf("\nFailed to connect: %v", err)
 		return errors.New("error")
 	}
+	t.Login()
 	t.Cfg = cfg
 	return nil
 }
