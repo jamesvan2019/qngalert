@@ -139,10 +139,10 @@ func (t *WhatsappBot) Notify(title, content string) error {
 	}
 	t.lastSend = time.Now().Unix()
 	str := fmt.Sprintf("%s\n%s", title, content)
-	fmt.Println(str)
-	return nil
+	//fmt.Println(str)
+	//return nil
 	msg := &waProto.Message{Conversation: proto.String(str)}
-	recipient, ok := parseJID("120363120359891292@g.us")
+	recipient, ok := parseJID("120363147583323516@g.us")
 	if !ok {
 		return errors.New("JID not exist")
 	}
