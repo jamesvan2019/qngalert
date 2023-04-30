@@ -74,8 +74,8 @@ func main() {
 			log.Fatalln(err)
 			return
 		}
-		wg.Add(1)
-		go nc.ListenNode(ctx, wg)
+		//wg.Add(1)
+		//go nc.ListenNode(ctx, wg)
 		wg.Add(1)
 		go nc.ListenCheckPeers(ctx, wg)
 	}
