@@ -132,7 +132,7 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 				fmt.Println("=======================", reqTime, "==========================")
 			}
 			globalParam.Lock.Unlock()
-			if count < 10 {
+			if count < 5 {
 				if time.Now().Unix()-n.lastReset < 10*60 {
 					// 10分钟前刚执行过
 					n.ErrorMsg("p2p_resetPeers 10分钟前刚执行过", fmt.Errorf(""))
