@@ -140,7 +140,7 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 				}
 				n.NotifyClients.Send("node peers exception",
 					n.ErrorMsgFormat("peer nodes count less than 10,please check", errors.New("peers too less")))
-				n.ResetPeer()
+				//n.ResetPeer()
 				continue
 			}
 			count1, _ := n.GetMempoolCount(false)
@@ -175,7 +175,7 @@ func (n *Node) ListenCheckPeers(ctx context.Context, wg *sync.WaitGroup) {
 						msg = "mempool同步问题 需要reset"
 						n.NotifyClients.Send("node peers exception:"+msg,
 							n.ErrorMsgFormat(fmt.Sprintf("reqTimes:%d | targetMempoolCount:%d | currentMempoolCount:%d ", reqTime, targetCount, count1), errors.New("memorypool poor connection")))
-						n.ResetPeer()
+						//n.ResetPeer()
 						continue
 					}
 				}
