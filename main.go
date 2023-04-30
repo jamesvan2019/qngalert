@@ -12,7 +12,6 @@ import (
 	"qngalert/notify"
 	"qngalert/notify/email"
 	"qngalert/notify/tg"
-	"qngalert/notify/whatsapp"
 	"qngalert/qng"
 	"sync"
 	"syscall"
@@ -53,10 +52,10 @@ func main() {
 		notifyClients = append(notifyClients, tgInstance)
 	}
 	// whatsapp
-	whatsappClient := &whatsapp.WhatsappBot{}
-	whatsappClient.Init(&cfg)
+	//whatsappClient := &whatsapp.WhatsappBot{}
+	//whatsappClient.Init(&cfg)
 	wg := &sync.WaitGroup{}
-	notifyClients = append(notifyClients, whatsappClient)
+	//notifyClients = append(notifyClients, whatsappClient)
 	qng.StateRootObj = qng.StateRootObjStruct{
 		StateRoots:    map[int64]qng.StateRoot{},
 		StateRootsArr: []int64{},
