@@ -24,7 +24,9 @@ type GraphState struct {
 
 type PeerInfo struct {
 	Address    string     `json:"address"`
-	State      string     `json:"state"`    //connected
+	State      bool       `json:"state"`    //connected
+	Active     bool       `json:"active"`   //connected
+	Version    string     `json:"version"`  //connected
 	Services   string     `json:"services"` // Relay | Full|Bloom|CF
 	GraphState GraphState `json:"graphstate"`
 }

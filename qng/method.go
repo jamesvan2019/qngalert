@@ -49,7 +49,7 @@ func (n *Node) GetPeers() (int64, error) {
 	n.GetPeersErrorTimes = 0
 	connected := int64(0)
 	for _, v := range r.Result {
-		if v.State == "connected" && v.Services != "Relay" {
+		if v.State && v.Services != "Relay" && v.Active {
 			connected++
 		}
 	}
